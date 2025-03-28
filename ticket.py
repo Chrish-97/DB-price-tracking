@@ -111,6 +111,7 @@ def choose_date(driver, target_month, target_day):
         current_month = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "datetime-picker-label"))
         ).text
+        print(current_month)
         if current_month == target_month:
             break
         #nächsten Monat klicken
