@@ -145,11 +145,17 @@ def choose_date(driver, target_month, target_day):
 # Ticket suchen und Preis extrahieren mit Screenshot der Ticketpreise
 def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=None):
     try:
+        page_source = driver.page_source
+        if "Günstige Tickets sichern" not in page_source:
+            print("Fehler: Button 'Günstige Tickets sichern' nicht gefunden.")
+            return None
+        print("search button vorhanden")
         search_button = WebDriverWait(driver, 20).until(
             EC.element_to_be_clickable((By.XPATH, "//span[contains(text(), 'Günstige Tickets sichern')]"))
         )
         search_button.click()
         sleep(5)
+        print("search button angeklicht")
         # Screenshot für Beweis
         driver.save_screenshot(screenshot_path)
 
@@ -201,8 +207,6 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
         return None
     except Exception as e:
         print(f"Ein Fehler ist aufgetreten: {str(e)}")
-        print("Aktueller HTML-Quellcode der Seite:")
-        print(driver.page_source)
         return None
 
 
