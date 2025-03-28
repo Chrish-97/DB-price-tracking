@@ -66,7 +66,7 @@ BASE_URL = "https://www.trainline.de"
 # Starte WebDriver
 def init_driver():
     options = webdriver.ChromeOptions()
-    options.add_argument('--headless')  # Im Hintergrund laufen lassen
+    #options.add_argument('--headless')  # Im Hintergrund laufen lassen
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     service = Service(ChromeDriverManager().install())
