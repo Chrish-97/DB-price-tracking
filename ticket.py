@@ -153,15 +153,17 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
             return None
         print("search button vorhanden")
 
-        # Warte auf den Schließ-Button des Popups, falls vorhanden
+       # Schließe das Währungs-/Sprach-Popup, falls vorhanden
         try:
-            close_button = WebDriverWait(driver, 5).until(
-                EC.element_to_be_clickable((By.XPATH, "//dialog[@aria-hidden='false']//button[@aria-label='close']"))
+            close_popup_button = WebDriverWait(driver, 5).until(
+                EC.element_to_be_clickable((By.XPATH, "//dialog[@id='bubble-overlay-currency-language']//button[@aria-label='close']"))
             )
-            close_button.click()
+            driver.execute_script("arguments[0].scrollIntoView(true);", close_popup_button)
+            close_popup_button.click()
             print("Popup geschlossen")
+            time.sleep(2)  # Warte kurz, damit das Popup verschwindet
         except TimeoutException:
-            print("Kein Popup gefunden, fahre fort...")
+            print("Kein Popup gefunden")
 
         # Warte auf den Button 'Günstige Tickets sichern'
         try:
