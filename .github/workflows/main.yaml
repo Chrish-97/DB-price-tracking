@@ -43,5 +43,6 @@ jobs:
           tree
           git add Bilder/*.png || echo ""
           git add sampledata.png || echo ""
+          git add ticket_prices.csv || echo ""
           git commit -m "${{ env.CI_COMMIT_MESSAGE }}" || echo ""
           git push || echo ""
