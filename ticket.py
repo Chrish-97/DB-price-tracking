@@ -315,6 +315,7 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         # Uhrzeit und Minuten auswählen
         wait_and_interact(driver, By.ID, "jsf-outbound-time-time-picker-hour", 'click')
         wait_and_interact(driver, By.XPATH, "//option[@value='05']", 'click')
+        print("05 angeklickt")
         select_minute = Select(driver.find_element(By.ID, "jsf-outbound-time-time-picker"))
         select_minute.select_by_value("15")
 
