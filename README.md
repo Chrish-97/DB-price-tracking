@@ -1,4 +1,6 @@
+Ticket Price Tracking App
 
+This Python application allows you to regularly track ticket prices for Deutsche Bahn (DB) train routes and sends notifications when the price drops. It helps users keep an eye on ticket prices and make timely decisions to book tickets at the best rates.
   1. Create and activate a Python environment in the project folder:  
    ```python3 -m venv venv```  
    ```source venv/bin/activate```  
