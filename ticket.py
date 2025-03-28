@@ -262,7 +262,9 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
             EC.presence_of_element_located((By.ID, "bookingPromo"))
         )
         if booking_checkbox.is_selected():
+            print("booking checkbox vorhanden")
             driver.execute_script("arguments[0].click();", booking_checkbox)
+            print("booking checkbox geklickt")
             sleep(5)
 
         # Ticketpreis extrahieren und Screenshot machen
