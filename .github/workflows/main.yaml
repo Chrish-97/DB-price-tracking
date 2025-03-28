@@ -24,3 +24,11 @@ jobs:
         #env:
         #  SOME_SECRET: ${{ secrets.SOME_SECRET }}
         run: python ticket.py
+
+      - name: GIT commit and push docs
+        if: always()
+        run: |
+          tree
+          git add Bilder/*.png
+          git commit -m "debug screenshot"
+          git push

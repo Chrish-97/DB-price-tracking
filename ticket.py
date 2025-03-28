@@ -360,6 +360,10 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         driver.quit()
         # whatapp senden
         #### Text definieren#######
+
+        #TODO
+        return None
+
         if previous_hin > extracted_price_1 and previous_heim > extracted_price_2 and csv:
             value_hin = ( previous_hin - extracted_price_1) / 10
             value_hin = round(value_hin, 2)
