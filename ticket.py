@@ -151,7 +151,7 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
                     By.XPATH,
                     ".//div[contains(@data-test, 'standard-ticket-price')]/span"
                 )
-                price = price_element.text.replace("€", "").replace(",", ".").strip()
+                price = price_element.text.replace("$", "").replace(",", ".").strip()
 
                 journey_info = {
                     "index": index,
