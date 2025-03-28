@@ -300,7 +300,9 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         print("time picker geklickt stunden")
 
         select_minute = Select(driver.find_element(By.ID, "jsf-outbound-time-time-picker"))
+        print("time picker minuten geklickt")
         select_minute.select_by_value("30")
+        print("30 mins geklickt")
 
         # Checkbox "Unterkünfte anzeigen" deaktivieren
         booking_checkbox = WebDriverWait(driver, 20).until(
