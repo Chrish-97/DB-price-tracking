@@ -138,6 +138,7 @@ def choose_date(driver, target_month, target_day):
             EC.element_to_be_clickable((By.CSS_SELECTOR, f'button[data-testid="jsf-calendar-date-button-{target_day}"]'))
         )
         driver.execute_script("arguments[0].click();", day_button)
+        print("day_button geklickt")
     except:
         print("day_button anklicken fehlgeschlagen")
 
@@ -150,7 +151,7 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
         search_button.click()
         sleep(5)
         # Screenshot für Beweis
-        driver.save_screenshot(screenshot_path)
+        #driver.save_screenshot(screenshot_path)
 
         journey_containers = driver.find_elements(By.XPATH, "//div[contains(@data-test, 'eu-journey-row')]")
         available_journeys = []
@@ -182,7 +183,7 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
                     continue
                 
             except NoSuchElementException:
-                #print(f"Fehler Reise {index}")
+                print(f" Fehler bei Reise suche {index}")
                 continue
 
         # Rückgabe vom PReis der gesuchten Reise
