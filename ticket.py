@@ -68,10 +68,12 @@ def init_driver():
     options.add_argument('--headless')  # Im Hintergrund laufen lassen
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
-    options.add_argument("--window-size=1920,1080")  
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=options)
     driver.set_window_size(1600, 900)
+ 
+ 
+    
     return driver
 
 
@@ -158,6 +160,7 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
             return None
         print("search button vorhanden")
         driver.save_screenshot(screenshot_path)
+
 
 
         try:
