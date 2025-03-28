@@ -313,22 +313,7 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         print("05 angeklickt")
         select_minute = Select(driver.find_element(By.ID, "jsf-outbound-time-time-picker"))
         select_minute.select_by_value("15")
-        screenshot_path = os.path.join(screenshot_dir, f"debug_screenshot.png")
 
-        # Finaler Screenshot nach Klick
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        sleep(2)
-        total_height = driver.execute_script( "return Math.max(document.body.scrollHeight, document.body.offsetHeight, "
-                "document.documentElement.clientHeight, document.documentElement.scrollHeight);"
-            )
-        total_width = driver.execute_script(
-                "return Math.max(document.body.scrollWidth, document.body.offsetWidth, "
-                "document.documentElement.clientWidth, document.documentElement.scrollWidth);"
-            )
-        driver.set_window_size(total_width, total_height)
-        driver.save_screenshot(screenshot_path)
-
-        sys.exit(0)
 
 
         # Checkbox deaktivieren, die noch eine neue seite mit booking.com Unterkünften öffnen würde
