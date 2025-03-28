@@ -115,7 +115,7 @@ def choose_date(driver, target_month, target_day):
         print("Popup gefunden!")
     
     # Optional: Screenshot vom Popup machen
-    driver.save_screenshot("popup_screenshot.png")
+        driver.save_screenshot("popup_screenshot.png")
     except:
         print("Kein Popup gefunden.")
     while True:
