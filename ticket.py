@@ -240,6 +240,8 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         # Nach Feld ausfüllen
         wait_and_interact(driver, By.ID, "jsf-destination-input", 'send_keys', nach)
         sleep(5)
+        driver.save_screenshot("after_click.png")
+
 
         # Datum wählen
         wait_and_interact(driver, By.ID, "jsf-outbound-time-input-toggle", 'click')
