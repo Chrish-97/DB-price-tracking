@@ -12,7 +12,6 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 import pandas as pd
 import os
 from twilio.rest import Client
-import sys
 
 # Daten für die Fahrt
 von = "Coburg"
@@ -48,7 +47,7 @@ else:
     df = pd.DataFrame(columns=["Zeit", "Hin_Preis", "Zurück_Preis"])
     previous_hin = 1
     previous_heim = 1
-    print("csv erstmalig erstellen test")
+    print("csv erstmalig erstellen")
 
 # Pics für Screenshots für Beweis
 screenshot_dir = os.path.join(current_path, "Bilder")
@@ -70,6 +69,7 @@ def init_driver():
     options.add_argument('--disable-dev-shm-usage')
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=options)
+    driver.set_window_size(1920, 1080)
     return driver
 
 
@@ -91,7 +91,7 @@ def wait_and_interact(driver, by, value, action='click', text=None):
             option_found = False
             for suggestion in suggestions:
                 suggestion_text = suggestion.text
-                print(f"Vorschlagstext: {suggestion_text}")
+                # print(f"Vorschlagstext: {suggestion_text}")
                 if text in suggestion_text:
                     suggestion.click()
                     option_found = True
@@ -108,23 +108,11 @@ def wait_and_interact(driver, by, value, action='click', text=None):
 # Wähle ein Datum aus
 def choose_date(driver, target_month, target_day):
     # erst überprüfen ob in dem geöffneten Datepicker, das gewünschte Datum vorhanden ist ansonsten in den nächsten monat klicken
-    print("pick date")
-    try:
-        # Wenn ein Popup erscheint, wird es normalerweise durch ein bestimmtes DOM-Element repräsentiert
-        popup = driver.find_element(By.ID, "popup_id")  # Ersetze 'popup_id' mit der tatsächlichen ID des Popups
-        print("Popup gefunden!")
-
-        # Optional: Screenshot vom Popup machen
-        driver.save_screenshot("popup_screenshot.png")
-    except:
-        print("Kein Popup gefunden.")
     while True:
         current_month = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "datetime-picker-label"))
         ).text
-        print(current_month)
         if current_month == target_month:
-            print("current_month = target_month")
             break
         # nächsten Monat klicken
         next_button = WebDriverWait(driver, 10).until(
@@ -134,78 +122,21 @@ def choose_date(driver, target_month, target_day):
         driver.execute_script("arguments[0].click();", next_button)
         sleep(1)
     # Tag aus Kalender anklicken
-    try:
-        day_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable(
-                (By.CSS_SELECTOR, f'button[data-testid="jsf-calendar-date-button-{target_day}"]'))
-        )
-        driver.execute_script("arguments[0].click();", day_button)
-        print("day_button geklickt")
-    except:
-        print("day_button anklicken fehlgeschlagen")
+    day_button = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, f'button[data-testid="jsf-calendar-date-button-{target_day}"]'))
+    )
+    driver.execute_script("arguments[0].click();", day_button)
 
 
 # Ticket suchen und Preis extrahieren mit Screenshot der Ticketpreise
 def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=None):
-    screenshot_path = os.path.join(screenshot_dir, f"debug_screenshot.png")
-
     try:
-        page_source = driver.page_source
-        if "Günstige Tickets sichern" not in page_source:
-            print("Fehler: Button 'Günstige Tickets sichern' nicht gefunden.")
-            return None
-        print("search button vorhanden")
-        driver.save_screenshot(screenshot_path)
-
-
-
-        try:
-            popup_dialog = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.ID, "bubble-overlay-currency-language"))
-            )
-            print("Sprach-/Währungs-Popup gefunden!")
-
-            # Screenshot des Popups erstellen
-            popup_screenshot_path = os.path.join(screenshot_dir, f"popup_screenshot_{datum_uhrzeit}.png")
-            driver.save_screenshot(popup_screenshot_path)
-            print(f"Screenshot des Popups erstellt: {popup_screenshot_path}")
-
-            # Sprache auf "Deutsch" (de-de) setzen
-            language_dropdown = popup_dialog.find_element(By.XPATH, "//select[@data-testid='language-picker']")
-            select_language = Select(language_dropdown)
-            select_language.select_by_value("de-de")
-            print("Sprache auf deutsch gesetzt")
-
-            # Währung auf "Euro" (EUR) setzen
-            currency_dropdown = popup_dialog.find_element(By.XPATH, "//select[@data-testid='currency-picker']")
-            select_currency = Select(currency_dropdown)
-            select_currency.select_by_value("EUR")
-            print("Währung auf euronen gesetzt")
-        # Warte, bis das Popup unsichtbar ist
-            WebDriverWait(driver, 10).until(
-                EC.invisibility_of_element_located((By.ID, "bubble-overlay-currency-language"))
-            )
-            print("opup  geschlossen")
-        except TimeoutException:
-            print("Kein Sprach-/Währungs-Popup gefunden, fahre fort...")
-
-
-        # Warte auf den Schließ-Button des Popups
-        close_button = WebDriverWait(driver, 20).until(
-            EC.element_to_be_clickable((By.XPATH, "//dialog[@aria-hidden='false']//button[@aria-label='close']"))
-        )
-        close_button.click()  # Schließe das Popup
-        print("Popup geschlossen")
-
-        # Warte auf den Button 'Günstige Tickets sichern'
         search_button = WebDriverWait(driver, 20).until(
             EC.element_to_be_clickable((By.XPATH, "//span[contains(text(), 'Günstige Tickets sichern')]"))
         )
-
-        search_button.click()  # Klicke den Button 'Günstige Tickets sichern'
-        time.sleep(5)
-        print("search button angeklickt")
-
+        search_button.click()
+        sleep(5)
+        # Screenshot für Beweis
         driver.save_screenshot(screenshot_path)
 
         journey_containers = driver.find_elements(By.XPATH, "//div[contains(@data-test, 'eu-journey-row')]")
@@ -238,7 +169,7 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
                     continue
 
             except NoSuchElementException:
-                print(f" Fehler bei Reise suche {index}")
+                # print(f"Fehler Reise {index}")
                 continue
 
         # Rückgabe vom PReis der gesuchten Reise
@@ -257,11 +188,6 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
         return None
     except Exception as e:
         print(f"Ein Fehler ist aufgetreten: {str(e)}")
-        dialog = driver.find_element(By.XPATH, "//dialog[@aria-hidden='false']")
-        print("HTML des blockierenden Dialogs:")
-        print(dialog.get_attribute("outerHTML"))
-
-        sys.exit("abbruch")
         return None
 
 
@@ -297,11 +223,11 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
 
         # Von Feld ausfüllen
         wait_and_interact(driver, By.ID, "jsf-origin-input", 'send_keys', von)
-        sleep(5)
+        sleep(1)
 
         # Nach Feld ausfüllen
         wait_and_interact(driver, By.ID, "jsf-destination-input", 'send_keys', nach)
-        sleep(5)
+        sleep(1)
 
         # Datum wählen
         wait_and_interact(driver, By.ID, "jsf-outbound-time-input-toggle", 'click')
@@ -310,43 +236,23 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         # Uhrzeit und Minuten auswählen
         wait_and_interact(driver, By.ID, "jsf-outbound-time-time-picker-hour", 'click')
         wait_and_interact(driver, By.XPATH, "//option[@value='05']", 'click')
-        print("05 angeklickt")
         select_minute = Select(driver.find_element(By.ID, "jsf-outbound-time-time-picker"))
         select_minute.select_by_value("15")
-        screenshot_path = os.path.join(screenshot_dir, f"debug_screenshot.png")
-
-        # Finaler Screenshot nach Klick
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        sleep(2)
-        total_height = driver.execute_script( "return Math.max(document.body.scrollHeight, document.body.offsetHeight, "
-                "document.documentElement.clientHeight, document.documentElement.scrollHeight);"
-            )
-        total_width = driver.execute_script(
-                "return Math.max(document.body.scrollWidth, document.body.offsetWidth, "
-                "document.documentElement.clientWidth, document.documentElement.scrollWidth);"
-            )
-        driver.set_window_size(total_width, total_height)
-        driver.save_screenshot(screenshot_path)
-
-        sys.exit(0)
-
 
         # Checkbox deaktivieren, die noch eine neue seite mit booking.com Unterkünften öffnen würde
         booking_checkbox = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.ID, "bookingPromo"))
         )
         if booking_checkbox.is_selected():
-            print("booking checkbox vorhanden")
             driver.execute_script("arguments[0].click();", booking_checkbox)
-            print("booking checkbox geklickt")
-            sleep(5)
+            sleep(1)
 
         # Ticketpreis extrahieren und Screenshot machen
         screenshot_path = os.path.join(screenshot_dir, f"{datum_uhrzeit}_hinfahrt_screenshot.png")
         extracted_price_1 = screenshot_and_extract_journey_info(driver, screenshot_path, hinfahrt_time)
         print(f"Hinfahrt Ticketpreis extracted_price_1: {extracted_price_1}")
         driver.quit()
-        sleep(5)
+        sleep(2)
 
         ######################################### Heimfahrt wiederholen #####################################
         driver = init_driver()
@@ -367,18 +273,12 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         # Datum wählen
         wait_and_interact(driver, By.ID, "jsf-outbound-time-input-toggle", 'click')
         choose_date(driver, heimfahrt_date_object.strftime("%B %Y"), heimfahrt_date_object.day)
-        print("Datum gewählt")
 
         # Uhrzeit und Minuten auswählen
         wait_and_interact(driver, By.ID, "jsf-outbound-time-time-picker-hour", 'click')
-        print("time picker geklickt_1")
         wait_and_interact(driver, By.XPATH, "//option[@value='17']", 'click')
-        print("time picker geklickt stunden")
-
         select_minute = Select(driver.find_element(By.ID, "jsf-outbound-time-time-picker"))
-        print("time picker minuten geklickt")
         select_minute.select_by_value("30")
-        print("30 mins geklickt")
 
         # Checkbox "Unterkünfte anzeigen" deaktivieren
         booking_checkbox = WebDriverWait(driver, 20).until(
@@ -407,10 +307,6 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         driver.quit()
         # whatapp senden
         #### Text definieren#######
-
-        # TODO
-        return None
-
         if previous_hin > extracted_price_1 and previous_heim > extracted_price_2 and csv:
             value_hin = (previous_hin - extracted_price_1) / 10
             value_hin = round(value_hin, 2)
