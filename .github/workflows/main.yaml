@@ -27,8 +27,13 @@ jobs:
 
       - name: GIT commit and push docs
         if: always()
+        env:
+          CI_COMMIT_MESSAGE: Continuous Integration Build Artifacts
+          CI_COMMIT_AUTHOR: Continuous Integration
         run: |
+          git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+          git config --global user.email "username@users.noreply.github.com"
           tree
           git add Bilder/*.png
-          git commit -m "debug screenshot"
+          git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
           git push
