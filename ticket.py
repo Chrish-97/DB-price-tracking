@@ -12,6 +12,7 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 import pandas as pd
 import os
 from twilio.rest import Client
+from currency_converter import CurrencyConverter
 
 # Daten für die Fahrt
 von = "Coburg"
@@ -152,6 +153,8 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
                     ".//div[contains(@data-test, 'standard-ticket-price')]/span"
                 )
                 price = price_element.text.replace("$", "").replace(",", ".").strip()
+                c = CurrencyConverter()
+                price = c.convert(price,'USD','EUR')
 
                 journey_info = {
                     "index": index,
