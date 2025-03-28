@@ -9,8 +9,6 @@ jobs:
 
       - name: checkout repo content
         uses: actions/checkout@v2
-        with:
-          ref: "feature/gh-actions"
 
       - name: setup python
         uses: actions/setup-python@v4
