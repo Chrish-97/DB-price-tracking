@@ -91,7 +91,7 @@ def wait_and_interact(driver, by, value, action='click', text=None):
             option_found = False
             for suggestion in suggestions:
                 suggestion_text = suggestion.text
-                #print(f"Vorschlagstext: {suggestion_text}")
+                print(f"Vorschlagstext: {suggestion_text}")
                 if text in suggestion_text:
                     suggestion.click()
                     option_found = True
@@ -240,7 +240,6 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         # Nach Feld ausfüllen
         wait_and_interact(driver, By.ID, "jsf-destination-input", 'send_keys', nach)
         sleep(5)
-        driver.save_screenshot("after_click.png")
 
 
         # Datum wählen
