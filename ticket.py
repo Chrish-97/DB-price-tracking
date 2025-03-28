@@ -108,6 +108,15 @@ def wait_and_interact(driver, by, value, action='click', text=None):
 def choose_date(driver, target_month, target_day):
     #erst überprüfen ob in dem geöffneten Datepicker, das gewünschte Datum vorhanden ist ansonsten in den nächsten monat klicken
     print("pick date")
+    try:
+    # Wenn ein Popup erscheint, wird es normalerweise durch ein bestimmtes DOM-Element repräsentiert
+    popup = driver.find_element(By.ID, "popup_id")  # Ersetze 'popup_id' mit der tatsächlichen ID des Popups
+    print("Popup gefunden!")
+    
+    # Optional: Screenshot vom Popup machen
+    driver.save_screenshot("popup_screenshot.png")
+    except:
+        print("Kein Popup gefunden.")
     while True:
         current_month = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "datetime-picker-label"))
