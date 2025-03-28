@@ -260,8 +260,6 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
         dialog = driver.find_element(By.XPATH, "//dialog[@aria-hidden='false']")
         print("HTML des blockierenden Dialogs:")
         print(dialog.get_attribute("outerHTML"))
-
-        sys.exit("abbruch")
         return None
 
 
