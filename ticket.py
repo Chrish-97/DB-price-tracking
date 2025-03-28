@@ -227,11 +227,13 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
         return None
     except Exception as e:
         print(f"Ein Fehler ist aufgetreten: {str(e)}")
-        dialog = driver.find_element(By.XPATH, "//dialog[@aria-hidden='false']")
-        print("HTML des blockierenden Dialogs:")
-        print(dialog.get_attribute("outerHTML"))
-
-        sys.exit("abbruch")
+        try:
+            dialog = driver.find_element(By.XPATH, "//dialog[@aria-hidden='false']")
+            print("HTML des blockierenden Dialogs:")
+            print(dialog.get_attribute("outerHTML"))
+        except:
+            print("Kein blockierender Dialog gefunden.")
+        #driver.save_screenshot(screenshot_path)
         return None
 
 
