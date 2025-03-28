@@ -1,5 +1,5 @@
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
   schedule:
     - cron: '0 2 * * *' # run at 2 AM UTC
 jobs:

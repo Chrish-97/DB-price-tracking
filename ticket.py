@@ -224,11 +224,11 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
 
         # Von Feld ausfüllen
         wait_and_interact(driver, By.ID, "jsf-origin-input", 'send_keys', von)
-        sleep(1)
+        sleep(5)
 
         # Nach Feld ausfüllen
         wait_and_interact(driver, By.ID, "jsf-destination-input", 'send_keys', nach)
-        sleep(1)
+        sleep(5)
 
         # Datum wählen
         wait_and_interact(driver, By.ID, "jsf-outbound-time-input-toggle", 'click')
@@ -246,14 +246,14 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         )
         if booking_checkbox.is_selected():
             driver.execute_script("arguments[0].click();", booking_checkbox)
-            sleep(1)
+            sleep(5)
 
         # Ticketpreis extrahieren und Screenshot machen
         screenshot_path = os.path.join(screenshot_dir, f"{datum_uhrzeit}_hinfahrt_screenshot.png")
         extracted_price_1 = screenshot_and_extract_journey_info(driver, screenshot_path, hinfahrt_time)
         print(f"Hinfahrt Ticketpreis extracted_price_1: {extracted_price_1}")
         driver.quit()
-        sleep(2)
+        sleep(5)
 
         ######################################### Heimfahrt wiederholen #####################################
         driver = init_driver()
