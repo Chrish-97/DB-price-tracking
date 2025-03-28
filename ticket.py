@@ -318,6 +318,11 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         print("05 angeklickt")
         select_minute = Select(driver.find_element(By.ID, "jsf-outbound-time-time-picker"))
         select_minute.select_by_value("15")
+        screenshot_path = os.path.join(screenshot_dir, f"debug_screenshot.png")
+        driver.save_screenshot(screenshot_path)
+
+        sys.exit(0)
+
 
         # Checkbox deaktivieren, die noch eine neue seite mit booking.com Unterkünften öffnen würde
         booking_checkbox = WebDriverWait(driver, 20).until(
