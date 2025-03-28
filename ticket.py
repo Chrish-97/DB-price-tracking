@@ -71,7 +71,6 @@ def init_driver():
     options.add_argument('--disable-dev-shm-usage')
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=options)
-    print("driver initialisiert")
     return driver
 
 # Warten und Elemente klicken
