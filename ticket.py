@@ -71,7 +71,6 @@ def init_driver():
     options.add_argument('--disable-dev-shm-usage')
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=options)
-    print("driver initialisiert")
     return driver
 
 # Warten und Elemente klicken
@@ -124,6 +123,7 @@ def choose_date(driver, target_month, target_day):
         ).text
         print(current_month)
         if current_month == target_month:
+            print("current_month = target_month")
             break
         #nächsten Monat klicken
         next_button = WebDriverWait(driver, 10).until(
@@ -133,10 +133,13 @@ def choose_date(driver, target_month, target_day):
         driver.execute_script("arguments[0].click();", next_button)
         sleep(1)
     # Tag aus Kalender anklicken
-    day_button = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.CSS_SELECTOR, f'button[data-testid="jsf-calendar-date-button-{target_day}"]'))
-    )
-    driver.execute_script("arguments[0].click();", day_button)
+    try:
+        day_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, f'button[data-testid="jsf-calendar-date-button-{target_day}"]'))
+        )
+        driver.execute_script("arguments[0].click();", day_button)
+    except:
+        print("day_button anklicken fehlgeschlagen")
 
 # Ticket suchen und Preis extrahieren mit Screenshot der Ticketpreise
 def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=None):
