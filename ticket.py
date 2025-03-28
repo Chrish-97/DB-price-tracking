@@ -159,6 +159,37 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
         print("search button vorhanden")
         driver.save_screenshot(screenshot_path)
 
+
+        try:
+            popup_dialog = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.ID, "bubble-overlay-currency-language"))
+            )
+            print("Sprach-/Währungs-Popup gefunden!")
+
+            # Screenshot des Popups erstellen
+            popup_screenshot_path = os.path.join(screenshot_dir, f"popup_screenshot_{datum_uhrzeit}.png")
+            driver.save_screenshot(popup_screenshot_path)
+            print(f"Screenshot des Popups erstellt: {popup_screenshot_path}")
+
+            # Sprache auf "Deutsch" (de-de) setzen
+            language_dropdown = popup_dialog.find_element(By.XPATH, "//select[@data-testid='language-picker']")
+            select_language = Select(language_dropdown)
+            select_language.select_by_value("de-de")
+            print("Sprache auf deutsch gesetzt")
+
+            # Währung auf "Euro" (EUR) setzen
+            currency_dropdown = popup_dialog.find_element(By.XPATH, "//select[@data-testid='currency-picker']")
+            select_currency = Select(currency_dropdown)
+            select_currency.select_by_value("EUR")
+            print("Währung auf euronen gesetzt")
+        # Warte, bis das Popup unsichtbar ist
+            WebDriverWait(driver, 10).until(
+                EC.invisibility_of_element_located((By.ID, "bubble-overlay-currency-language"))
+            )
+            print("opup  geschlossen")
+        except TimeoutException:
+            print("Kein Sprach-/Währungs-Popup gefunden, fahre fort...")
+
         sys.exit(0)
 
         # Warte auf den Schließ-Button des Popups
