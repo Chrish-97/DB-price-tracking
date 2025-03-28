@@ -107,6 +107,7 @@ def wait_and_interact(driver, by, value, action='click', text=None):
 # Wähle ein Datum aus
 def choose_date(driver, target_month, target_day):
     #erst überprüfen ob in dem geöffneten Datepicker, das gewünschte Datum vorhanden ist ansonsten in den nächsten monat klicken
+    print("pick date")
     while True:
         current_month = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "datetime-picker-label"))
