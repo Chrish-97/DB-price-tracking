@@ -145,12 +145,17 @@ def choose_date(driver, target_month, target_day):
 
 # Ticket suchen und Preis extrahieren mit Screenshot der Ticketpreise
 def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=None):
+    screenshot_path = os.path.join(screenshot_dir, f"debug_screenshot.png")
+
     try:
         page_source = driver.page_source
         if "Günstige Tickets sichern" not in page_source:
             print("Fehler: Button 'Günstige Tickets sichern' nicht gefunden.")
             return None
         print("search button vorhanden")
+        driver.save_screenshot(screenshot_path)
+
+        sys.exit(0)
 
         # Warte auf den Schließ-Button des Popups
         close_button = WebDriverWait(driver, 20).until(
