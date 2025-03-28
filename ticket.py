@@ -150,13 +150,21 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
             print("Fehler: Button 'Günstige Tickets sichern' nicht gefunden.")
             return None
         print("search button vorhanden")
+
+        try:
+            WebDriverWait(driver, 10).until(EC.invisibility_of_element_located((By.CSS_SELECTOR, "dialog[open]")))
+            print("popup vorhanden")
+        except TimeoutException:
+            print("Kein Popup gefunden oder Timeout beim Warten auf Popup")
+
+        # Warte, bis der Button wirklich klickbar ist
         search_button = WebDriverWait(driver, 20).until(
             EC.element_to_be_clickable((By.XPATH, "//span[contains(text(), 'Günstige Tickets sichern')]"))
         )
         search_button.click()
         sleep(5)
-        print("search button angeklicht")
-        # Screenshot für Beweis
+        print("search button angeklickt")
+
         driver.save_screenshot(screenshot_path)
 
         journey_containers = driver.find_elements(By.XPATH, "//div[contains(@data-test, 'eu-journey-row')]")
