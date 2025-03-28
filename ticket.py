@@ -201,6 +201,8 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
         return None
     except Exception as e:
         print(f"Ein Fehler ist aufgetreten: {str(e)}")
+        print("Aktueller HTML-Quellcode der Seite:")
+        print(driver.page_source)
         return None
 
 
