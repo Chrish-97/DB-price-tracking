@@ -4,6 +4,8 @@ on:
     - cron: '0 2 * * *' # run at 2 AM UTC
 jobs:
   ticket:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
 
