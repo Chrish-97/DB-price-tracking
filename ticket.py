@@ -151,7 +151,7 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
         search_button.click()
         sleep(5)
         # Screenshot für Beweis
-        #driver.save_screenshot(screenshot_path)
+        driver.save_screenshot(screenshot_path)
 
         journey_containers = driver.find_elements(By.XPATH, "//div[contains(@data-test, 'eu-journey-row')]")
         available_journeys = []
@@ -291,10 +291,14 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         # Datum wählen
         wait_and_interact(driver, By.ID, "jsf-outbound-time-input-toggle", 'click')
         choose_date(driver, heimfahrt_date_object.strftime("%B %Y"), heimfahrt_date_object.day)
+        print("Datum gewählt")
 
         # Uhrzeit und Minuten auswählen
         wait_and_interact(driver, By.ID, "jsf-outbound-time-time-picker-hour", 'click')
+        print("time picker geklickt_1")
         wait_and_interact(driver, By.XPATH, "//option[@value='17']", 'click')
+        print("time picker geklickt stunden")
+
         select_minute = Select(driver.find_element(By.ID, "jsf-outbound-time-time-picker"))
         select_minute.select_by_value("30")
 
