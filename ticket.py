@@ -50,7 +50,7 @@ else:
     df = pd.DataFrame(columns=["Zeit", "Hin_Preis", "Zurück_Preis"])
     previous_hin = 1
     previous_heim = 1
-    print("csv erstmalig erstellen")
+    print("csv erstmalig erstellen test")
 
 # Pics für Screenshots für Beweis
 screenshot_dir = os.path.join(current_path, "Bilder")
