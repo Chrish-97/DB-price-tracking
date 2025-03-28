@@ -161,6 +161,8 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
         print("search button vorhanden")
         driver.save_screenshot(screenshot_path)
 
+        sys.exit(0)
+
 
         try:
             popup_dialog = WebDriverWait(driver, 10).until(
