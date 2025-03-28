@@ -145,35 +145,39 @@ def choose_date(driver, target_month, target_day):
 
 # Ticket suchen und Preis extrahieren mit Screenshot der Ticketpreise
 def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=None):
-    screenshot_path = os.path.join(screenshot_dir, f"debug_screenshot.png")
-
+    page_source = driver.page_source
     try:
         page_source = driver.page_source
         if "Günstige Tickets sichern" not in page_source:
             print("Fehler: Button 'Günstige Tickets sichern' nicht gefunden.")
             return None
         print("search button vorhanden")
-        driver.save_screenshot(screenshot_path)
 
-        sys.exit(0)
-
-        # Warte auf den Schließ-Button des Popups
-        close_button = WebDriverWait(driver, 20).until(
-            EC.element_to_be_clickable((By.XPATH, "//dialog[@aria-hidden='false']//button[@aria-label='close']"))
-        )
-        close_button.click()  # Schließe das Popup
-        print("Popup geschlossen")
+        # Warte auf den Schließ-Button des Popups, falls vorhanden
+        try:
+            close_button = WebDriverWait(driver, 5).until(
+                EC.element_to_be_clickable((By.XPATH, "//dialog[@aria-hidden='false']//button[@aria-label='close']"))
+            )
+            close_button.click()
+            print("Popup geschlossen")
+        except TimeoutException:
+            print("Kein Popup gefunden, fahre fort...")
 
         # Warte auf den Button 'Günstige Tickets sichern'
-        search_button = WebDriverWait(driver, 20).until(
-            EC.element_to_be_clickable((By.XPATH, "//span[contains(text(), 'Günstige Tickets sichern')]"))
-        )
-        
-        search_button.click()  # Klicke den Button 'Günstige Tickets sichern'
-        time.sleep(5)
-        print("search button angeklickt")
-
-        driver.save_screenshot(screenshot_path)
+        try:
+            search_button = WebDriverWait(driver, 20).until(
+                EC.element_to_be_clickable((By.XPATH, "//span[contains(text(), 'Günstige Tickets sichern')]"))
+            )
+            driver.execute_script("arguments[0].scrollIntoView(true);", search_button)
+            search_button.click()
+            print("search button angeklickt")
+            time.sleep(5)
+        except TimeoutException:
+            print("Timeout: Button 'Günstige Tickets sichern' nicht gefunden.")
+            print("Aktueller HTML-Inhalt der Seite:")
+            print(driver.page_source[:2000])  
+            return None
+    
 
         journey_containers = driver.find_elements(By.XPATH, "//div[contains(@data-test, 'eu-journey-row')]")
         available_journeys = []
