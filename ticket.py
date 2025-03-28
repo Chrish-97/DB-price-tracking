@@ -111,8 +111,8 @@ def choose_date(driver, target_month, target_day):
     print("pick date")
     try:
     # Wenn ein Popup erscheint, wird es normalerweise durch ein bestimmtes DOM-Element repräsentiert
-    popup = driver.find_element(By.ID, "popup_id")  # Ersetze 'popup_id' mit der tatsächlichen ID des Popups
-    print("Popup gefunden!")
+        popup = driver.find_element(By.ID, "popup_id")  # Ersetze 'popup_id' mit der tatsächlichen ID des Popups
+        print("Popup gefunden!")
     
     # Optional: Screenshot vom Popup machen
     driver.save_screenshot("popup_screenshot.png")
