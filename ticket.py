@@ -14,7 +14,6 @@ import os
 from twilio.rest import Client
 import sys
 
-
 # Daten für die Fahrt
 von = "Coburg"
 nach = "Hamburg"
@@ -22,8 +21,6 @@ hinfahrt_date = "24.04.2025"
 hinfahrt_time = "06:44"
 heimfahrt_date = "27.04.2025"
 heimfahrt_time = "17:35"
-
-
 
 ##############################################################################################################
 hinfahrt_date_object = datetime.strptime(hinfahrt_date, "%d.%m.%Y")
@@ -39,13 +36,13 @@ heimfahrt_day = heimfahrt_date_object.day
 current_path = os.getcwd()
 CSV_FILE = os.path.join(current_path, "ticket_prices.csv")
 if os.path.exists(CSV_FILE):
-    #print(os.path)
+    # print(os.path)
     df = pd.read_csv(CSV_FILE)
     previous_hin = df.sort_values(by='Zeit', ascending=False).iloc[0]['Hin_Preis']
     previous_heim = df.sort_values(by='Zeit', ascending=False).iloc[0]['Zurück_Preis']
-    #print(f"hin:{previous_hin}, heim:{previous_heim}")
+    # print(f"hin:{previous_hin}, heim:{previous_heim}")
     csv = True
-    #print("csv ist da")
+    # print("csv ist da")
 else:
     csv = False
     df = pd.DataFrame(columns=["Zeit", "Hin_Preis", "Zurück_Preis"])
@@ -64,6 +61,7 @@ datum_uhrzeit = jetzt.strftime("%d-%m-%Y_%H-%M")
 # Musste trainline nehmen, da auf DB seite Probleme hatte mit dem Cookie banner. Auf trainline kann ich den banner akzeptieren
 BASE_URL = "https://www.trainline.de"
 
+
 # Starte WebDriver
 def init_driver():
     options = webdriver.ChromeOptions()
@@ -74,10 +72,11 @@ def init_driver():
     driver = webdriver.Chrome(service=service, options=options)
     return driver
 
+
 # Warten und Elemente klicken
 def wait_and_interact(driver, by, value, action='click', text=None):
     element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((by, value)))
-    
+
     if action == 'click':
         element.click()
     elif action == 'send_keys':
@@ -105,16 +104,17 @@ def wait_and_interact(driver, by, value, action='click', text=None):
             print("Fehler: beim  interagieren mit den Elementen")
     return element
 
+
 # Wähle ein Datum aus
 def choose_date(driver, target_month, target_day):
-    #erst überprüfen ob in dem geöffneten Datepicker, das gewünschte Datum vorhanden ist ansonsten in den nächsten monat klicken
+    # erst überprüfen ob in dem geöffneten Datepicker, das gewünschte Datum vorhanden ist ansonsten in den nächsten monat klicken
     print("pick date")
     try:
-    # Wenn ein Popup erscheint, wird es normalerweise durch ein bestimmtes DOM-Element repräsentiert
+        # Wenn ein Popup erscheint, wird es normalerweise durch ein bestimmtes DOM-Element repräsentiert
         popup = driver.find_element(By.ID, "popup_id")  # Ersetze 'popup_id' mit der tatsächlichen ID des Popups
         print("Popup gefunden!")
-    
-    # Optional: Screenshot vom Popup machen
+
+        # Optional: Screenshot vom Popup machen
         driver.save_screenshot("popup_screenshot.png")
     except:
         print("Kein Popup gefunden.")
@@ -126,7 +126,7 @@ def choose_date(driver, target_month, target_day):
         if current_month == target_month:
             print("current_month = target_month")
             break
-        #nächsten Monat klicken
+        # nächsten Monat klicken
         next_button = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[data-testid="calendar-navigate-to-next-month"]'))
         )
@@ -136,77 +136,68 @@ def choose_date(driver, target_month, target_day):
     # Tag aus Kalender anklicken
     try:
         day_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, f'button[data-testid="jsf-calendar-date-button-{target_day}"]'))
+            EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, f'button[data-testid="jsf-calendar-date-button-{target_day}"]'))
         )
         driver.execute_script("arguments[0].click();", day_button)
         print("day_button geklickt")
     except:
         print("day_button anklicken fehlgeschlagen")
 
+
 # Ticket suchen und Preis extrahieren mit Screenshot der Ticketpreise
 def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=None):
-    page_source = driver.page_source
+    screenshot_path = os.path.join(screenshot_dir, f"debug_screenshot.png")
+
     try:
         page_source = driver.page_source
         if "Günstige Tickets sichern" not in page_source:
             print("Fehler: Button 'Günstige Tickets sichern' nicht gefunden.")
             return None
         print("search button vorhanden")
+        driver.save_screenshot(screenshot_path)
 
-       try:
-            popup_dialog = WebDriverWait(driver, 5).until(
-                EC.presence_of_element_located((By.XPATH, "//dialog[@id='bubble-overlay-currency-language']"))
-            )
-            popup_content = popup_dialog.get_attribute("outerHTML")
-            print("Popup gefunden! Inhalt des Popups:")
-            print(popup_content)  # Gibt den  HTML-Inhalt von  Popup aus
-            
-            # Finde und klicke den Schließen-Button
-            close_popup_button = popup_dialog.find_element(By.XPATH, ".//button[@aria-label='close']")
-            driver.execute_script("arguments[0].scrollIntoView(true);", close_popup_button)
-            close_popup_button.click()
-            print("Popup geschlossen")
-            time.sleep(2)  # Warte kurz, damit das Popup verschwindet
-        except TimeoutException:
-            print("Popup gefunden, fahre fort...")
+        sys.exit(0)
+
+        # Warte auf den Schließ-Button des Popups
+        close_button = WebDriverWait(driver, 20).until(
+            EC.element_to_be_clickable((By.XPATH, "//dialog[@aria-hidden='false']//button[@aria-label='close']"))
+        )
+        close_button.click()  # Schließe das Popup
+        print("Popup geschlossen")
 
         # Warte auf den Button 'Günstige Tickets sichern'
-        try:
-            search_button = WebDriverWait(driver, 20).until(
-                EC.element_to_be_clickable((By.XPATH, "//span[contains(text(), 'Günstige Tickets sichern')]"))
-            )
-            driver.execute_script("arguments[0].scrollIntoView(true);", search_button)
-            search_button.click()
-            print("search button angeklickt")
-            time.sleep(5)
-        except TimeoutException:
-            print("Timeout: Button 'Günstige Tickets sichern' nicht gefunden.")
-            print("Aktueller HTML-Inhalt der Seite:")
-            print(driver.page_source[:2000])  
-            return None
-    
+        search_button = WebDriverWait(driver, 20).until(
+            EC.element_to_be_clickable((By.XPATH, "//span[contains(text(), 'Günstige Tickets sichern')]"))
+        )
+
+        search_button.click()  # Klicke den Button 'Günstige Tickets sichern'
+        time.sleep(5)
+        print("search button angeklickt")
+
+        driver.save_screenshot(screenshot_path)
 
         journey_containers = driver.find_elements(By.XPATH, "//div[contains(@data-test, 'eu-journey-row')]")
         available_journeys = []
-        target_price = None  
+        target_price = None
         # Liste alle gefundenen Zeiten auf und überprüfe ob gewünschte Zeit hinfart_time gefunden wird um preis zu extrahieren
         for index, container in enumerate(journey_containers):
             try:
                 time_element = container.find_element(By.XPATH, ".//time")
                 departure_time = time_element.text
                 price_element = container.find_element(
-                    By.XPATH, 
+                    By.XPATH,
                     ".//div[contains(@data-test, 'standard-ticket-price')]/span"
                 )
                 price = price_element.text.replace("€", "").replace(",", ".").strip()
-                
+
                 journey_info = {
                     "index": index,
                     "departure_time": departure_time,
                     "price": float(price)
                 }
                 available_journeys.append(journey_info)
-                
+
                 # überprüfe ob die gefundene zeit die gesuchte zeit ist
                 if departure_time == target_time:
                     target_price = float(price)
@@ -214,7 +205,7 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
                     break
                 else:
                     continue
-                
+
             except NoSuchElementException:
                 print(f" Fehler bei Reise suche {index}")
                 continue
@@ -225,7 +216,8 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
             return target_price
         else:
             if target_time:
-                print(f"Keine Reise mit Abfahrtszeit {target_time} gefunden. Gewünschte Abfahrtzeit wirklich vorhanden auf DB seite?")
+                print(
+                    f"Keine Reise mit Abfahrtszeit {target_time} gefunden. Gewünschte Abfahrtzeit wirklich vorhanden auf DB seite?")
                 raise
             return None
 
@@ -234,26 +226,23 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
         return None
     except Exception as e:
         print(f"Ein Fehler ist aufgetreten: {str(e)}")
-        try:
-            dialog = driver.find_element(By.XPATH, "//dialog[@aria-hidden='false']")
-            print("HTML des blockierenden Dialogs:")
-            print(dialog.get_attribute("outerHTML"))
-        except:
-            print("Kein blockierender Dialog gefunden.")
-        #driver.save_screenshot(screenshot_path)
-        return None
+        dialog = driver.find_element(By.XPATH, "//dialog[@aria-hidden='false']")
+        print("HTML des blockierenden Dialogs:")
+        print(dialog.get_attribute("outerHTML"))
 
+        sys.exit("abbruch")
+        return None
 
 
 # Benachrichtigungsfunktion über Twilio
 def send_notification(message_body):
-    #token aus Twilio
+    # token aus Twilio
     account_sid = [account_sid_from_Twilio]
     auth_token = [auth_token_from_Twilio]
     client = Client(account_sid, auth_token)
-    
+
     recipients = ["add whatsappp numbers from recipients"]
-    
+
     for recipient in recipients:
         message = client.messages.create(
             body=message_body,
@@ -261,9 +250,6 @@ def send_notification(message_body):
             to=recipient
         )
     print("whatsapp gesendet")
-
-
-
 
 
 # main function für hin und rückfahrt
@@ -285,7 +271,6 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         # Nach Feld ausfüllen
         wait_and_interact(driver, By.ID, "jsf-destination-input", 'send_keys', nach)
         sleep(5)
-
 
         # Datum wählen
         wait_and_interact(driver, By.ID, "jsf-outbound-time-input-toggle", 'click')
@@ -374,13 +359,13 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         # whatapp senden
         #### Text definieren#######
 
-        #TODO
+        # TODO
         return None
 
         if previous_hin > extracted_price_1 and previous_heim > extracted_price_2 and csv:
-            value_hin = ( previous_hin - extracted_price_1) / 10
+            value_hin = (previous_hin - extracted_price_1) / 10
             value_hin = round(value_hin, 2)
-            value_heim = ( previous_heim - extracted_price_2) / 10
+            value_heim = (previous_heim - extracted_price_2) / 10
             value_heim = round(value_heim, 2)
             body = f"""*****KOOOOOOOOOORN*****
 Du kannst {value_hin} Schlachtplatten bei der Hinfahrt und {value_heim} bei der Heimfahrt sparen.
@@ -389,33 +374,31 @@ Jetzt: {extracted_price_1}€
 Heimfahrt vorher: {previous_heim}€
 Jetzt: {extracted_price_2}€
 *****KOOOOOOOOOORN*****""".strip()
-        
+
         elif previous_hin > extracted_price_1 and csv:
-            value_hin = ( previous_hin - extracted_price_1) / 10
+            value_hin = (previous_hin - extracted_price_1) / 10
             value_hin = round(value_hin, 2)
-            body=f"""Kniebohrer Alarm!
+            body = f"""Kniebohrer Alarm!
 Du kannst {value_hin} Schlachtplatten bei der Hinfahrt sparen.
 Vorheriger Preis: {previous_hin}€
 Jetziger Preis: {extracted_price_1}€""".strip()
-        
+
         elif previous_heim > extracted_price_2 and csv:
-            value_heim = ( previous_heim - extracted_price_2) / 10
+            value_heim = (previous_heim - extracted_price_2) / 10
             value_heim = round(value_heim, 2)
-            body=f"""Kniebohrer Alarm!
+            body = f"""Kniebohrer Alarm!
 Du kannst {value_heim} Schlachtplatten bei der Heimfahrt sparen. 
 Vorheriger Preis: {previous_heim}€
 Jetziger Preis: {extracted_price_2}€""".strip()
-    
+
     if not csv:
         print("erster Eintrag in csv - Preistracking hat erst begonnen")
 
-    elif previous_hin > extracted_price_1 or previous_heim > extracted_price_2 :
+    elif previous_hin > extracted_price_1 or previous_heim > extracted_price_2:
         send_notification(body)
     else:
         print(f"Keine Preisänderung hin:{previous_hin}, heim:{previous_heim}")
-    
-        
-    
-    
+
+
 ## funktion ausführen
 book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object)
