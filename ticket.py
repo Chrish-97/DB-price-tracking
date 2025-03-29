@@ -21,10 +21,10 @@ locale.setlocale(locale.LC_TIME, "de_DE.UTF-8")
 # Daten für die Fahrt
 von = "Coburg"
 nach = "Hamburg"
-hinfahrt_date = "16.10.2025"
-hinfahrt_time = "16:28"
-heimfahrt_date = "02.11.2025"
-heimfahrt_time = "05:54"
+hinfahrt_date = "24.04.2025"
+hinfahrt_time = "06:44"
+heimfahrt_date = "27.04.2025"
+heimfahrt_time = "17:35"
 
 ##############################################################################################################
 hinfahrt_date_object = datetime.strptime(hinfahrt_date, "%d.%m.%Y")
@@ -403,8 +403,8 @@ Jetziger Preis: {extracted_price_2}€""".strip()
 
     #elif previous_hin > extracted_price_1 or previous_heim > extracted_price_2:
         #send_notification(body)
-    else:
-        print(f"Keine Preisänderung hin:{previous_hin}, heim:{previous_heim}")
+    #else:
+        #print(f"Keine Preisänderung hin:{previous_hin}, heim:{previous_heim}")
 
 
 ## funktion ausführen
