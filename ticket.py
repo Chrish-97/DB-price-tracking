@@ -333,7 +333,7 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         choose_date(driver, heimfahrt_date_object.strftime("%B %Y"), heimfahrt_date_object.day)
 
         #calculate hour and minute for dropdown
-        ro_hour, ro_minute = round_down_to_15_minutes(heimfahrt_time)
+        to_hour, to_minute = round_down_to_15_minutes(heimfahrt_time)
 
         # Uhrzeit und Minuten auswählen
         wait_and_interact(driver, By.ID, "jsf-outbound-time-time-picker-hour", 'click')
