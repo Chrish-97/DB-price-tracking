@@ -12,7 +12,7 @@ import argparse
 import logging
 
 logging.getLogger().setLevel(logging.INFO)
-#logging.getLogger('selenium').setLevel(logging.DEBUG)
+logging.getLogger('selenium').setLevel(logging.DEBUG)
 
 # Set up Selenium WebDriver
 options = webdriver.ChromeOptions()
