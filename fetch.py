@@ -3,6 +3,7 @@ import datetime
 import pandas as pd
 from matplotlib import pyplot as plt
 from selenium import webdriver
+from selenium.webdriver import FirefoxProfile
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import time
@@ -13,12 +14,19 @@ import logging
 logging.getLogger().setLevel(logging.INFO)
 
 # Set up Selenium WebDriver
-options = webdriver.ChromeOptions()
-options.add_argument("--headless")
-options.add_argument("--disable-gpu")
-options.add_argument("--window-size=1920,1080")
-options.add_argument("--enable-javascript")
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+#options = webdriver.ChromeOptions()
+#options.add_argument("--headless")
+#options.add_argument("--disable-gpu")
+#options.add_argument("--window-size=1920,1080")
+#options.add_argument("--enable-javascript")
+#driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
+options = webdriver.FirefoxOptions()
+#options.add_argument("-headless")
+firefox_profile = FirefoxProfile()
+firefox_profile.set_preference("javascript.enabled", True)
+options.profile = firefox_profile
+driver = webdriver.Firefox(options=options)
 
 def append_to_data(from_price, to_price, name):
     with open(f"data/{name}.csv", 'a+') as fd:
@@ -28,7 +36,7 @@ def append_to_data(from_price, to_price, name):
 def get_price_for_url(url, name, discount = 0):
     logging.info(f"getting price from {url}")
     driver.get(url)
-    time.sleep(5)
+    time.sleep(10)
     driver.save_screenshot(f"data/{name}-screenshot.png")
     logging.info("html: " + driver.page_source)
     result = float(re.findall(r'ab(\d*,\d*)&nbsp;€', driver.page_source)[0].replace(",", "."))
