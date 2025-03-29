@@ -195,6 +195,36 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
         return None
 
 
+#########währung auswählen
+def set_currency_to_eur(driver):
+    try:
+        # Währungsauswahl öffnen
+        try:
+            currency_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, "button#bubble-interactive-overlay-currency-language"))
+            )
+            currency_button.click()
+        except:
+            print("Währungs-/Sprachauswahl geöffnet über Alternative")
+
+        # Währung auf EUR setzen
+        currency_select = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "select[data-testid='currency-picker']"))
+        )
+        select = Select(currency_select)
+        select.select_by_value("EUR")
+        print("Währung auf EUR gesetzt")
+        sleep(1)
+
+        # Overlay schließen
+        close_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "button[aria-label='close']"))
+        )
+        close_button.click()
+        print("Währungsauswahl geschlossen")
+        sleep(1)
+
+
 
 # Benachrichtigungsfunktion über Twilio
 def send_notification(message_body):
@@ -233,6 +263,9 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         # Nach Feld ausfüllen
         wait_and_interact(driver, By.ID, "jsf-destination-input", 'send_keys', nach)
         sleep(1)
+
+        #Währung
+        set_currency_to_eur(driver)
 
         # Datum wählen
         wait_and_interact(driver, By.ID, "jsf-outbound-time-input-toggle", 'click')
@@ -274,6 +307,9 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         # Nach Feld ausfüllen
         wait_and_interact(driver, By.ID, "jsf-destination-input", 'send_keys', von)
         sleep(1)
+
+        #Währung 
+        set_currency_to_eur(driver)
 
         # Datum wählen
         wait_and_interact(driver, By.ID, "jsf-outbound-time-input-toggle", 'click')
