@@ -1,4 +1,4 @@
-import pandas
+import pandas as pd
 import matplotlib.pyplot as plt
 
 df = pandas.read_csv('ticket_prices.csv', delimiter=',', index_col=0)
