@@ -13,12 +13,16 @@ import pandas as pd
 import os
 from twilio.rest import Client
 from currency_converter import CurrencyConverter
+import locale
+
+locale.setlocale(locale.LC_TIME, "de_DE.UTF-8")
+
 
 # Daten für die Fahrt
 von = "Coburg"
 nach = "Hamburg"
 hinfahrt_date = "16.10.2025"
-hinfahrt_time = "16:38"
+hinfahrt_time = "16:28"
 heimfahrt_date = "02.11.2025"
 heimfahrt_time = "05:54"
 
@@ -280,12 +284,15 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         # Datum wählen
         wait_and_interact(driver, By.ID, "jsf-outbound-time-input-toggle", 'click')
         choose_date(driver, hinfahrt_date_object.strftime("%B %Y"), hinfahrt_date_object.day)
+        
+        #calculate hour and minute for dropdown
+        from_hour, from_minute = round_down_to_15_minutes(hinfahrt_time)
 
         # Uhrzeit und Minuten auswählen
         wait_and_interact(driver, By.ID, "jsf-outbound-time-time-picker-hour", 'click')
-        wait_and_interact(driver, By.XPATH, "//option[@value='05']", 'click')
+        wait_and_interact(driver, By.XPATH, f"//option[@value={from_hour}]", 'click')
         select_minute = Select(driver.find_element(By.ID, "jsf-outbound-time-time-picker"))
-        select_minute.select_by_value("15")
+        select_minute.select_by_value(f"{from_minute}")
 
         # Checkbox deaktivieren, die noch eine neue seite mit booking.com Unterkünften öffnen würde
         booking_checkbox = WebDriverWait(driver, 20).until(
@@ -325,13 +332,14 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         wait_and_interact(driver, By.ID, "jsf-outbound-time-input-toggle", 'click')
         choose_date(driver, heimfahrt_date_object.strftime("%B %Y"), heimfahrt_date_object.day)
 
-        to_hour, to_minute = round_down_to_15_minutes(hinfahrt_time)
+        #calculate hour and minute for dropdown
+        ro_hour, ro_minute = round_down_to_15_minutes(heimfahrt_time)
 
         # Uhrzeit und Minuten auswählen
         wait_and_interact(driver, By.ID, "jsf-outbound-time-time-picker-hour", 'click')
         wait_and_interact(driver, By.XPATH, f"//option[@value={to_hour}]", 'click')
         select_minute = Select(driver.find_element(By.ID, "jsf-outbound-time-time-picker"))
-        select_minute.select_by_value(f"{to_minute")
+        select_minute.select_by_value(f"{to_minute}")
 
         # Checkbox "Unterkünfte anzeigen" deaktivieren
         booking_checkbox = WebDriverWait(driver, 20).until(
