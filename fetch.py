@@ -28,6 +28,7 @@ def get_price_for_url(url, name, discount = 0):
     driver.get(url)
     time.sleep(10)
     driver.save_screenshot(f"data/{name}-screenshot.png")
+    logging.info("html: " + driver.page_source)
     result = float(re.findall(r'ab(\d*,\d*)&nbsp;€', driver.page_source)[0].replace(",", "."))
     logging.info(f"price for {url} is: {result} - after discount {round(result - result * discount / 100, 2)}")
     return round(result - result * discount / 100, 2)
