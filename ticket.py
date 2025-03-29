@@ -155,6 +155,7 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
                 price = price_element.text.replace("$", "").replace(",", ".").strip()
                 c = CurrencyConverter()
                 price = c.convert(price,'USD','EUR')
+                price = round(price, 2)
 
                 journey_info = {
                     "index": index,
