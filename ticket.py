@@ -223,6 +223,8 @@ def set_currency_to_eur(driver):
         close_button.click()
         print("Währungsauswahl geschlossen")
         sleep(1)
+    except Exception as e:
+        print(f"Fehler bei der Währungsauswahl: {str(e)}")
 
 
 
