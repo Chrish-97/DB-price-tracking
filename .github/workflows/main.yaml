@@ -1,7 +1,7 @@
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 * * * *' # run at 2 AM UTC
+  #schedule:
+  #  - cron: '0 * * * *' # run at 2 AM UTC
 jobs:
   ticket:
     permissions:
@@ -23,14 +23,12 @@ jobs:
           pip install -r requirements.txt
 
       - name: execute py script
-        #env:
-        #  SOME_SECRET: ${{ secrets.SOME_SECRET }}
-        run: python ticket.py
-
-      - name: execute py script
-        #env:
-        #  SOME_SECRET: ${{ secrets.SOME_SECRET }}
-        run: python chart.py
+        run: |
+          python fetch.py \
+            --from-url "https://www.bahn.de/buchung/start?vbid=d72a6bff%2Dc003%2D4d29%2D9c60%2D06c88d4a3f5e" \
+            --to-url "https://www.bahn.de/buchung/start?vbid=d72a6bff%2Dc003%2D4d29%2D9c60%2D06c88d4a3f5e" \
+            --name april2025 \
+            --discount 25
 
       - name: push
         if: always()
@@ -41,9 +39,7 @@ jobs:
           git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
           git config --global user.email "username@users.noreply.github.com"
           tree
-          git add Bilder/*.png || echo ""
-          git add sampledata.png || echo ""
-          git add ticket_prices.csv || echo ""
+          git add data/* || echo ""
           git status || echo ""
           git commit -m "${{ env.CI_COMMIT_MESSAGE }}" || echo ""
           git push || echo ""
