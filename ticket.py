@@ -205,7 +205,7 @@ def set_currency_to_eur(driver):
             )
             currency_button.click()
         except:
-            print("Währungs-/Sprachauswahl geöffnet über Alternative")
+            print("Fehler beim öffnen von Sprachauswahl und Währungsauswahl")
 
         # Währung auf EUR setzen
         currency_select = WebDriverWait(driver, 10).until(
@@ -290,7 +290,7 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         # Ticketpreis extrahieren und Screenshot machen
         screenshot_path = os.path.join(screenshot_dir, f"{datum_uhrzeit}_hinfahrt_screenshot.png")
         extracted_price_1 = screenshot_and_extract_journey_info(driver, screenshot_path, hinfahrt_time)
-        print(f"Hinfahrt Ticketpreis extracted_price_1: {extracted_price_1}")
+        print(f"Hinfahrt Ticketpreis extracted_price_1: {extracted_price_1}€")
         driver.quit()
         sleep(2)
 
@@ -335,7 +335,7 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         # Ticketpreis extrahieren und Screenshot machen
         screenshot_path = os.path.join(screenshot_dir, f"{datum_uhrzeit}_heimfahrt_screenshot.png")
         extracted_price_2 = screenshot_and_extract_journey_info(driver, screenshot_path, heimfahrt_time)
-        print(f"Heimfahrt Ticketpreis extracted_preice_2: {extracted_price_2}")
+        print(f"Heimfahrt Ticketpreis extracted_preice_2: {extracted_price_2}€")
 
         # Preise in CSV speichern
         new_row = pd.DataFrame([{
