@@ -12,6 +12,7 @@ import argparse
 import logging
 
 logging.getLogger().setLevel(logging.INFO)
+logging.getLogger('selenium').setLevel(logging.DEBUG)
 
 # Set up Selenium WebDriver
 options = webdriver.ChromeOptions()
@@ -29,7 +30,7 @@ def append_to_data(from_price, to_price, name):
 def get_price_for_url(url, name, discount = 0):
     logging.info(f"getting price from {url}")
     driver.get(url)
-    time.sleep(10)
+    time.sleep(5)
     driver.save_screenshot(f"data/{name}-screenshot.png")
     logging.info("html: " + driver.page_source)
     result = float(re.findall(r'ab(\d*,\d*)&nbsp;€', driver.page_source)[0].replace(",", "."))
