@@ -14,19 +14,12 @@ import logging
 logging.getLogger().setLevel(logging.INFO)
 
 # Set up Selenium WebDriver
-#options = webdriver.ChromeOptions()
-#options.add_argument("--headless")
-#options.add_argument("--disable-gpu")
-#options.add_argument("--window-size=1920,1080")
-#options.add_argument("--enable-javascript")
-#driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-
-options = webdriver.FirefoxOptions()
-options.add_argument("-headless")
-firefox_profile = FirefoxProfile()
-firefox_profile.set_preference("javascript.enabled", True)
-options.profile = firefox_profile
-driver = webdriver.Firefox(options=options)
+options = webdriver.ChromeOptions()
+options.add_argument("--headless")
+options.add_argument("--disable-gpu")
+options.add_argument("--window-size=1920,1080")
+options.add_argument("--enable-javascript")
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 def append_to_data(from_price, to_price, name):
     with open(f"data/{name}.csv", 'a+') as fd:
