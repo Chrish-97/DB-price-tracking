@@ -23,7 +23,7 @@ jobs:
 
       - name: install apt packages
         run: |
-          sudo apt-get install -y chromium-browser libglib2.0 libnss3 libgconf-2-4 libfontconfig1 chromium-driver
+          sudo apt-get install -y chromium-browser libglib2.0 libnss3 libfontconfig1 chromium-driver
       - name: install python packages
         run: |
           python -m pip install --upgrade pip
