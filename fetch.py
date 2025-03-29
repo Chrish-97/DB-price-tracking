@@ -24,9 +24,10 @@ def append_to_data(from_price, to_price, name):
         fd.write(f"{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")},{from_price},{to_price}\n")
         logging.info(f"appended from {from_price} to {to_price} to data file")
 
-def get_price_for_url(url, discount = 0):
+def get_price_for_url(url, name, discount = 0):
     driver.get(url)
     time.sleep(10)
+    driver.save_screenshot(f"data/{name}-screenshot.png")
     result = float(re.findall(r'ab(\d*,\d*)&nbsp;€', driver.page_source)[0].replace(",", "."))
     logging.info(f"price for {url} is: {result} - after discount {round(result - result * discount / 100, 2)}")
     return round(result - result * discount / 100, 2)
@@ -52,8 +53,8 @@ args = parser.parse_args()
 
 logging.info("start fetching data")
 
-to_price = get_price_for_url(args.from_url, args.discount)
-from_price = get_price_for_url(args.to_url, args.discount)
+to_price = get_price_for_url(args.from_url, args.name, args.discount)
+from_price = get_price_for_url(args.to_url, args.name, args.discount)
 
 append_to_data(from_price, to_price, args.name)
 
