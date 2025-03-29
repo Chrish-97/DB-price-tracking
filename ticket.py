@@ -194,6 +194,38 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
         print(f"Ein Fehler ist aufgetreten: {str(e)}")
         return None
 
+############ währung umstellen ####
+
+def select_currency_eur(driver, popup_dialog):
+    """
+    Wählt die Währung 'EUR' im Popup aus und schließt es.
+    """
+    try:
+        # Währungsdropdown finden und "EUR" auswählen
+        currency_dropdown = WebDriverWait(popup_dialog, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//select[@data-testid='currency-picker']"))
+        )
+        select_currency = Select(currency_dropdown)
+        select_currency.select_by_value("EUR")
+        print("Währung auf 'Euro' (EUR) gesetzt")
+
+        # Schließen-Button finden und anklicken
+        close_popup_button = WebDriverWait(popup_dialog, 10).until(
+            EC.element_to_be_clickable((By.XPATH, ".//button[@aria-label='close']"))
+        )
+        driver.execute_script("arguments[0].scrollIntoView(true);", close_popup_button)
+        driver.execute_script("arguments[0].click();", close_popup_button)
+        print("Versuch, Popup zu schließen...")
+
+        # Warte, bis das Popup unsichtbar ist
+        WebDriverWait(driver, 10).until(
+            EC.invisibility_of_element_located((By.ID, "bubble-overlay-currency-language"))
+        )
+        print("Sprach-/Währungs-Popup erfolgreich geschlossen")
+    except Exception as e:
+        print(f"Fehler beim Auswählen der Währung oder Schließen des Popups: {str(e)}")
+        raise
+
 
 # Benachrichtigungsfunktion über Twilio
 def send_notification(message_body):
@@ -291,6 +323,14 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         if booking_checkbox.is_selected():
             driver.execute_script("arguments[0].click();", booking_checkbox)
             sleep(1)
+
+        try:
+            popup_dialog = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.ID, "bubble-overlay-currency-language"))
+            )
+            select_currency_eur(driver, popup_dialog)
+        except TimeoutException:
+            print("Kein Sprach-/Währungs-Popup gefunden, fahre fort...")
 
         # Ticketpreis extrahieren und Screenshot machen
         screenshot_path = os.path.join(screenshot_dir, f"{datum_uhrzeit}_heimfahrt_screenshot.png")
