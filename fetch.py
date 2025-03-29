@@ -25,6 +25,7 @@ def append_to_data(from_price, to_price, name):
         logging.info(f"appended from {from_price} to {to_price} to data file")
 
 def get_price_for_url(url, name, discount = 0):
+    logging.info(f"getting price from {url}")
     driver.get(url)
     time.sleep(10)
     driver.save_screenshot(f"data/{name}-screenshot.png")
