@@ -22,7 +22,7 @@ logging.getLogger().setLevel(logging.INFO)
 #driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 options = webdriver.FirefoxOptions()
-#options.add_argument("-headless")
+options.add_argument("-headless")
 firefox_profile = FirefoxProfile()
 firefox_profile.set_preference("javascript.enabled", True)
 options.profile = firefox_profile
