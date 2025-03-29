@@ -57,7 +57,7 @@ if not os.path.exists(screenshot_dir):
     print("Ordner für pics erstellt")
 
 jetzt = datetime.now()
-datum_uhrzeit = jetzt.strftime("%d-%m-%Y_%H-%M")
+datum_uhrzeit = jetzt.strftime("%Y-%m-%d %H:%M:%S")
 # Musste trainline nehmen, da auf DB seite Probleme hatte mit dem Cookie banner. Auf trainline kann ich den banner akzeptieren
 BASE_URL = "https://www.trainline.de"
 
@@ -339,7 +339,7 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
 
         # Preise in CSV speichern
         new_row = pd.DataFrame([{
-            "Zeit": jetzt.strftime("%Y-%m-%d %H:%M:%S"),
+            "Zeit": jetzt,
             "Hin_Preis": extracted_price_1,
             "Zurück_Preis": extracted_price_2
         }])
