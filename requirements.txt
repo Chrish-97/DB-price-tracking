@@ -3,3 +3,4 @@ webdriver_manager
 pandas
 twilio
 matplotlib
+currencyconverter
