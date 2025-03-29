@@ -12,11 +12,11 @@ import argparse
 import logging
 
 logging.getLogger().setLevel(logging.INFO)
-logging.getLogger('selenium').setLevel(logging.DEBUG)
+#logging.getLogger('selenium').setLevel(logging.DEBUG)
 
 # Set up Selenium WebDriver
 options = webdriver.ChromeOptions()
-options.add_argument("--headless=chrome")
+options.add_argument("--headless=new")
 options.add_argument("--disable-gpu")
 options.add_argument("--window-size=1920,1080")
 options.add_argument("--enable-javascript")
@@ -32,9 +32,9 @@ def append_to_data(from_price, to_price, name):
 def get_price_for_url(url, name, discount = 0):
     logging.info(f"getting price from {url}")
     driver.get(url)
-    time.sleep(20)
+    time.sleep(10)
     driver.save_screenshot(f"data/{name}-screenshot.png")
-    logging.info("html: " + driver.page_source)
+    #logging.info("html: " + driver.page_source)
     result = float(re.findall(r'ab(\d*,\d*)&nbsp;€', driver.page_source)[0].replace(",", "."))
     logging.info(f"price for {url} is: {result} - after discount {round(result - result * discount / 100, 2)}")
     return round(result - result * discount / 100, 2)
