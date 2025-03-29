@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-from datetime import datetime
+from datetime import datetime, timedelta
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
@@ -60,6 +60,12 @@ jetzt = datetime.now()
 datum_uhrzeit = jetzt.strftime("%Y-%m-%d %H:%M:%S")
 # Musste trainline nehmen, da auf DB seite Probleme hatte mit dem Cookie banner. Auf trainline kann ich den banner akzeptieren
 BASE_URL = "https://www.trainline.de"
+
+# Hour & minute calculation for searchbar
+def round_down_to_15_minutes(time_str):
+    time_obj = datetime.strptime(time_str, "%H:%M")
+    rounded_time = time_obj - timedelta(minutes=time_obj.minute % 15)
+    return rounded_time.strftime("%H"), rounded_time.strftime("%M")
 
 
 # Starte WebDriver
@@ -273,11 +279,14 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         wait_and_interact(driver, By.ID, "jsf-outbound-time-input-toggle", 'click')
         choose_date(driver, hinfahrt_date_object.strftime("%B %Y"), hinfahrt_date_object.day)
 
+        # calculate hour and minute for searchbar 
+        hour_to, minute_to = round_down_to_15_minutes(hinfahrt_time)
+
         # Uhrzeit und Minuten auswählen
         wait_and_interact(driver, By.ID, "jsf-outbound-time-time-picker-hour", 'click')
-        wait_and_interact(driver, By.XPATH, "//option[@value='05']", 'click')
+        wait_and_interact(driver, By.XPATH, f"//option[@value={hour_to}]", 'click')
         select_minute = Select(driver.find_element(By.ID, "jsf-outbound-time-time-picker"))
-        select_minute.select_by_value("15")
+        select_minute.select_by_value(f"{minute_to}")
 
         # Checkbox deaktivieren, die noch eine neue seite mit booking.com Unterkünften öffnen würde
         booking_checkbox = WebDriverWait(driver, 20).until(
@@ -317,11 +326,15 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         wait_and_interact(driver, By.ID, "jsf-outbound-time-input-toggle", 'click')
         choose_date(driver, heimfahrt_date_object.strftime("%B %Y"), heimfahrt_date_object.day)
 
+         # calculate hour and minute for searchbar 
+
+        hour_from, minute_from = round_down_to_15_minutes(hinfahrt_time)
+
         # Uhrzeit und Minuten auswählen
         wait_and_interact(driver, By.ID, "jsf-outbound-time-time-picker-hour", 'click')
-        wait_and_interact(driver, By.XPATH, "//option[@value='17']", 'click')
+        wait_and_interact(driver, By.XPATH, f"//option[@value={hour_from}]", 'click')
         select_minute = Select(driver.find_element(By.ID, "jsf-outbound-time-time-picker"))
-        select_minute.select_by_value("30")
+        select_minute.select_by_value(f"{minute_from}")
 
         # Checkbox "Unterkünfte anzeigen" deaktivieren
         booking_checkbox = WebDriverWait(driver, 20).until(
