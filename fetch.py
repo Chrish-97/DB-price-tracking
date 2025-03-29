@@ -28,7 +28,7 @@ def append_to_data(from_price, to_price, name):
 def get_price_for_url(url, name, discount = 0):
     logging.info(f"getting price from {url}")
     driver.get(url)
-    time.sleep(3)
+    time.sleep(10)
     driver.save_screenshot(f"data/{name}-screenshot.png")
     logging.info("html: " + driver.page_source)
     result = float(re.findall(r'ab(\d*,\d*)&nbsp;€', driver.page_source)[0].replace(",", "."))
