@@ -17,10 +17,10 @@ from currency_converter import CurrencyConverter
 # Daten für die Fahrt
 von = "Coburg"
 nach = "Hamburg"
-hinfahrt_date = "24.04.2025"
-hinfahrt_time = "06:44"
-heimfahrt_date = "27.04.2025"
-heimfahrt_time = "17:35"
+hinfahrt_date = "16.10.2025"
+hinfahrt_time = "16:38"
+heimfahrt_date = "02.11.2025"
+heimfahrt_time = "05:54"
 
 ##############################################################################################################
 hinfahrt_date_object = datetime.strptime(hinfahrt_date, "%d.%m.%Y")
