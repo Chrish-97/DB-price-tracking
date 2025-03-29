@@ -17,6 +17,9 @@ logging.getLogger('selenium').setLevel(logging.DEBUG)
 # Set up Selenium WebDriver
 options = webdriver.ChromeOptions()
 #options.add_argument("--headless=new")
+options.add_argument("--start-maximized") #open Browser in maximized mode
+options.add_argument("--no-sandbox") #bypass OS security model
+options.add_argument("--disable-dev-shm-usage")
 options.add_argument("--disable-gpu")
 options.add_argument("--window-size=1920,1080")
 options.add_argument("--enable-javascript")
