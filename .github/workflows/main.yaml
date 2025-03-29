@@ -21,17 +21,11 @@ jobs:
       - name: setup node
         uses: actions/setup-node@v4
 
-      - name: Installing package list
-        run: apt list --installed
-      - name: Removing previous chrome instances on runner
-        run: sudo apt purge google-chrome-stable
-
-       # Need to fetch reqs if needed
-      - name: Installing all necessary packages
-        run: pip install chromedriver-autoinstaller selenium pyvirtualdisplay
-
-      - name: Install xvfb
-        run: sudo apt-get install xvfb
+      - name: Install Chrome and ChromeDriver
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+          sudo apt-get install -y libglib2.0-0 libnss3 libfontconfig1
 
       - name: install python packages
         run: |
