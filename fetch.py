@@ -16,12 +16,11 @@ logging.getLogger('selenium').setLevel(logging.DEBUG)
 
 # Set up Selenium WebDriver
 options = webdriver.ChromeOptions()
-#options.add_argument("--headless=new")
+options.add_argument("--headless=new")
 options.add_argument("--disable-gpu")
 options.add_argument("--window-size=1920,1080")
 options.add_argument("--enable-javascript")
 options.add_argument("--disable-blink-features=AutomationControlled")
-options.add_experimental_option("prefs", {"profile.managed_default_content_settings.javascript": 1})
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 def append_to_data(from_price, to_price, name):
