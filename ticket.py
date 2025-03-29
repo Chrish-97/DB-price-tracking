@@ -382,7 +382,7 @@ Jetziger Preis: {extracted_price_2}€""".strip()
         print("erster Eintrag in csv - Preistracking hat erst begonnen")
 
     #elif previous_hin > extracted_price_1 or previous_heim > extracted_price_2:
-        send_notification(body)
+        #send_notification(body)
     else:
         print(f"Keine Preisänderung hin:{previous_hin}, heim:{previous_heim}")
 
