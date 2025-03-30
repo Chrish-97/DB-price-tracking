@@ -36,6 +36,7 @@ jobs:
       - name: execute py script
         run: |
           python ticket.py 
+          chart.py
 
       - name: push
         if: always()
