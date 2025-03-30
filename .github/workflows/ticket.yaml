@@ -39,7 +39,7 @@ jobs:
           python chart.py
 
      - name: push
-      run: |
-        git add * || echo ""
-        git commit -m "${{ env.CI_COMMIT_MESSAGE }}" || echo ""
-        git push || echo ""
+        run: |
+          git add * || echo ""
+          git commit -m "${{ env.CI_COMMIT_MESSAGE }}" || echo ""
+          git push || echo ""
