@@ -357,7 +357,7 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
 
         # Preise in CSV speichern
         new_row = pd.DataFrame([{
-            "Zeit": jetzt,
+            "Zeit": datum_uhrzeit,
             "Hin_Preis": extracted_price_1,
             "Zurück_Preis": extracted_price_2
         }])
