@@ -1,8 +1,8 @@
 on:
   push: 
   workflow_dispatch:
-  #schedule:
-  #  - cron: '0 * * * *' # run at 2 AM UTC
+  schedule:
+    - cron: '0 * * * *'
 jobs:
   ticket:
     permissions:
