@@ -88,7 +88,7 @@ def wait_and_interact(driver, by, value, action='click', text=None):
     elif action == 'send_keys':
         element.clear()
         element.send_keys(text)
-        sleep(1)
+        sleep(3)
         WebDriverWait(driver, 10).until(
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'li[role="option"]'))
         )
@@ -102,7 +102,7 @@ def wait_and_interact(driver, by, value, action='click', text=None):
                     suggestion.click()
                     option_found = True
                     logging.info(f" {text} aus dropdown ausgewählt")
-                    sleep(1)
+                    sleep(3)
                     break
             if not option_found:
                 raise Exception(f"Kein passender Vorschlag für {text} gefunden")
@@ -126,7 +126,7 @@ def choose_date(driver, target_month, target_day):
         )
         driver.execute_script("arguments[0].scrollIntoView(true);", next_button)
         driver.execute_script("arguments[0].click();", next_button)
-        sleep(1)
+        sleep(3)
     # Tag aus Kalender anklicken
     day_button = WebDriverWait(driver, 10).until(
         EC.element_to_be_clickable((By.CSS_SELECTOR, f'button[data-testid="jsf-calendar-date-button-{target_day}"]'))
@@ -141,7 +141,7 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
             EC.element_to_be_clickable((By.XPATH, "//span[contains(text(), 'Günstige Tickets sichern')]"))
         )
         search_button.click()
-        sleep(5)
+        sleep(10)
         # Screenshot für Beweis
         driver.save_screenshot(screenshot_path)
 
@@ -219,7 +219,7 @@ def set_currency_to_eur(driver):
         select = Select(currency_select)
         select.select_by_value("EUR")
         logging.info("Währung auf EUR gesetzt")
-        sleep(1)
+        sleep(3)
 
         # Overlay schließen
         close_button = WebDriverWait(driver, 10).until(
@@ -227,7 +227,7 @@ def set_currency_to_eur(driver):
         )
         close_button.click()
         logging.info("Währungsauswahl geschlossen")
-        sleep(1)
+        sleep(3)
     except Exception as e:
         logging.info(f"Fehler bei der Währungsauswahl: {str(e)}")
 
@@ -273,11 +273,11 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
 
         # Von Feld ausfüllen
         wait_and_interact(driver, By.ID, "jsf-origin-input", 'send_keys', von)
-        sleep(1)
+        sleep(3)
 
         # Nach Feld ausfüllen
         wait_and_interact(driver, By.ID, "jsf-destination-input", 'send_keys', nach)
-        sleep(1)
+        sleep(3)
 
         #Währung
         set_currency_to_eur(driver)
@@ -301,14 +301,14 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         )
         if booking_checkbox.is_selected():
             driver.execute_script("arguments[0].click();", booking_checkbox)
-            sleep(1)
+            sleep(3)
 
         # Ticketpreis extrahieren und Screenshot machen
         screenshot_path = os.path.join(screenshot_dir, f"{datum_uhrzeit}_hinfahrt_screenshot.png")
         extracted_price_1 = screenshot_and_extract_journey_info(driver, screenshot_path, hinfahrt_time)
         logging.info(f"Hinfahrt Ticketpreis extracted_price_1: {extracted_price_1}€")
         driver.quit()
-        sleep(2)
+        sleep(5)
 
         ######################################### Heimfahrt wiederholen #####################################
         driver = init_driver()
@@ -320,11 +320,11 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
 
         # Von Feld ausfüllen
         wait_and_interact(driver, By.ID, "jsf-origin-input", 'send_keys', nach)
-        sleep(1)
+        sleep(3)
 
         # Nach Feld ausfüllen
         wait_and_interact(driver, By.ID, "jsf-destination-input", 'send_keys', von)
-        sleep(1)
+        sleep(3)
 
         #Währung 
         set_currency_to_eur(driver)
@@ -348,7 +348,7 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         )
         if booking_checkbox.is_selected():
             driver.execute_script("arguments[0].click();", booking_checkbox)
-            sleep(1)
+            sleep(3)
 
 
         # Ticketpreis extrahieren und Screenshot machen
