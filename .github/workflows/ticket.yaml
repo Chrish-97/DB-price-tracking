@@ -51,3 +51,21 @@ jobs:
           git status || echo ""
           git commit -m "${{ env.CI_COMMIT_MESSAGE }}" || echo ""
           git push || echo ""
+
+      - name: issue
+        run: |
+          
+          if awk -F, 'NR > 1 {prev2 = col2; prev3 = col3} {col2 = $2; col3 = $3} END {exit !(col2 < prev2 || col3 < prev3)}' "ticket_prices.csv"; then
+              echo "Condition not met: Last row values are not lower."
+          else
+              gh issue create \
+                --title "$TITLE" \
+                --assignee "$ASSIGNEES" \
+                --body `tail -n 2 ticket_prices.csv`
+          fi
+
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          TITLE: Kornalarm
+          ASSIGNEES: maxgruber19,Chrish-97
