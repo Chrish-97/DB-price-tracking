@@ -70,14 +70,22 @@ jobs:
               gh issue create \
               --title "Preisminderung" \
               --assignee "$ASSIGNEES" \
-              --body "# Preisminderung\n'''\n$last_two_rows\n'''"
+              --body "# Preisminderung
+          '''
+          $last_two_rows
+          '''
+          "
           elif awk -v a="$last_col2" -v b="$prev_col2" -v c="$last_col3" -v d="$prev_col3" \
              'BEGIN {if (a > b || c > d) exit 0; else exit 1}'; then
               echo "increase"
               gh issue create \
               --title "Preissteigerung" \
               --assignee "$ASSIGNEES" \
-              --body "# Preissteigerung\n'''\n$last_two_rows\n'''"
+              --body "# Preissteigerung
+          '''
+          $last_two_rows
+          '''
+          "
           else
               echo "no change"
           fi
