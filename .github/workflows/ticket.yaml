@@ -56,17 +56,36 @@ jobs:
       - name: issue
         run: |
           
-          if awk -F, 'NR > 1 {prev2 = col2; prev3 = col3} {col2 = $2; col3 = $3} END {exit !(col2 < prev2 || col3 < prev3)}' "ticket_prices.csv"; then
-              echo "Condition not met: Last row values are not lower."
-          else
+          # Extract the last two rows
+          last_two_rows=$(tail -2 "ticket_prices.csv")
+          
+          # Read values from the last two rows
+          read -r ts1 col2_prev col3_prev <<<"$(echo "$last_two_rows" | head -1 | awk -F, '{print $1, $2, $3}')"
+          read -r ts2 col2_last col3_last <<<"$(echo "$last_two_rows" | tail -1 | awk -F, '{print $1, $2, $3}')"
+          
+          # Compare values
+          if (( $(echo "$col2_last < $col2_prev" | bc -l) )) || (( $(echo "$col3_last < $col3_prev" | bc -l) )); then
               gh issue create \
-                --title "$TITLE" \
+                --title "Preissenkung" \
                 --assignee "$ASSIGNEES" \
                 --body "
-                  ## Korn Alarm
-                  Folgende Preisminderung wurde festgesgellt:
-                  `tail -n 2 ticket_prices.csv`
+                # Preisminderung
+                '''
+                $last_two_rows
+                '''
                 "
+          elif (( $(echo "$col2_last > $col2_prev" | bc -l) )) || (( $(echo "$col3_last > $col3_prev" | bc -l) )); then
+              gh issue create \
+                --title "Preiserhöhung" \
+                --assignee "$ASSIGNEES" \
+                --body "
+                # Preiserhöhung
+                '''
+                $last_two_rows
+                '''
+                "
+          else
+              echo "no change"
           fi
 
         env:
