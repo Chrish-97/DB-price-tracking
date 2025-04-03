@@ -22,7 +22,7 @@ jobs:
             --title "$TITLE" \
             --assignee "$ASSIGNEES" \
             --label "korn" \
-            --body "$BODY")
+            --body "$BODY"
         env:
           # GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # GH_REPO: ${{ github.repository }}
