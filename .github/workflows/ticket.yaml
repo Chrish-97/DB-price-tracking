@@ -56,32 +56,31 @@ jobs:
       - name: issue
         run: |
           
-          # Extract the last two rows
-          last_two_rows=$(tail -2 "ticket_prices.csv")
+          # Read the last two rows of the CSV
+          last_two_rows=$(tail -n 2 ticket_prices.csv)
           
-          # Read values from the last two rows
-          read -r ts1 col2_prev col3_prev <<<"$(echo "$last_two_rows" | head -1 | awk -F, '{print $1, $2, $3}')"
-          read -r ts2 col2_last col3_last <<<"$(echo "$last_two_rows" | tail -1 | awk -F, '{print $1, $2, $3}')"
+          # Extract values
+          prev_col2=$(echo "$last_two_rows" | head -n 1 | awk -F',' '{print $2}')
+          prev_col3=$(echo "$last_two_rows" | head -n 1 | awk -F',' '{print $3}')
           
-          # Compare values
-          if (( $(echo "$col2_last < $col2_prev" | bc -l) )) || (( $(echo "$col3_last < $col3_prev" | bc -l) )); then
+          last_col2=$(echo "$last_two_rows" | tail -n 1 | awk -F',' '{print $2}')
+          last_col3=$(echo "$last_two_rows" | tail -n 1 | awk -F',' '{print $3}')
+          
+          # Convert numbers and compare
+          if awk -v a="$last_col2" -v b="$prev_col2" -v c="$last_col3" -v d="$prev_col3" \
+             'BEGIN {if (a < b || c < d) exit 0; else exit 1}'; then
+              echo "drop"
               gh issue create \
-                --title "Preissenkung" \
-                --assignee "$ASSIGNEES" \
-                --body "# Preisminderung
-                '''
-                $last_two_rows
-                '''
-                "
-          elif (( $(echo "$col2_last > $col2_prev" | bc -l) )) || (( $(echo "$col3_last > $col3_prev" | bc -l) )); then
+              --title "Preisminderung" \
+              --assignee "$ASSIGNEES" \
+              --body "# Preisminderung\n'''\n$last_two_rows\n'''"
+          elif awk -v a="$last_col2" -v b="$prev_col2" -v c="$last_col3" -v d="$prev_col3" \
+             'BEGIN {if (a > b || c > d) exit 0; else exit 1}'; then
+              echo "increase"
               gh issue create \
-                --title "Preiserhöhung" \
-                --assignee "$ASSIGNEES" \
-                --body "# Preiserhöhung
-                '''
-                $last_two_rows
-                '''
-                "
+              --title "Preissteigerung" \
+              --assignee "$ASSIGNEES" \
+              --body "# Preissteigerung\n'''\n$last_two_rows\n'''"
           else
               echo "no change"
           fi
