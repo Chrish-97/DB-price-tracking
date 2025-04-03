@@ -1,0 +1,34 @@
+name: Weekly Team Sync
+on:
+  workflow_dispatch:
+
+jobs:
+  create_issue:
+    name: Create team sync issue
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: create
+        run: |
+          #previous_issue_number=$(gh issue list \
+          #  --label "korn" \
+          #  --json number \
+          #  --jq '.[0].number')
+          #  
+          #gh issue close "$previous_issue_number"
+
+          gh issue create \
+            --title "$TITLE" \
+            --assignee "$ASSIGNEES" \
+            --label "korn" \
+            --body "$BODY")
+        env:
+          # GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # GH_REPO: ${{ github.repository }}
+          TITLE: Kornalarm
+          ASSIGNEES: maxgruber19,Chrish-97
+          BODY: |
+            ### Agenda
+
+            die fahrscheine bitte
