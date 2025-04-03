@@ -61,7 +61,11 @@ jobs:
               gh issue create \
                 --title "$TITLE" \
                 --assignee "$ASSIGNEES" \
-                --body `tail -n 2 ticket_prices.csv`
+                --body "
+                  ## Korn Alarm
+                  Folgende Preisminderung wurde festgesgellt:
+                  `tail -n 2 ticket_prices.csv`
+                "
           fi
 
         env:
