@@ -11,12 +11,13 @@ from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 import pandas as pd
 import os
+import logging
 from twilio.rest import Client
 from currency_converter import CurrencyConverter
 import locale
 
 locale.setlocale(locale.LC_TIME, "de_DE.UTF-8")
-
+logging.getLogger().setLevel(logging.INFO)
 
 # Daten für die Fahrt
 von = "Coburg"
@@ -52,13 +53,13 @@ else:
     df = pd.DataFrame(columns=["Zeit", "Hin_Preis", "Zurück_Preis"])
     previous_hin = 1
     previous_heim = 1
-    print("csv erstmalig erstellen")
+    logging.info("csv erstmalig erstellen")
 
 # Pics für Screenshots für Beweis
 screenshot_dir = os.path.join(current_path, "Bilder")
 if not os.path.exists(screenshot_dir):
     os.makedirs(screenshot_dir)
-    print("Ordner für pics erstellt")
+    logging.info("Ordner für pics erstellt")
 
 jetzt = datetime.now()
 datum_uhrzeit = jetzt.strftime("%Y-%m-%d %H:%M:%S")
@@ -96,17 +97,17 @@ def wait_and_interact(driver, by, value, action='click', text=None):
             option_found = False
             for suggestion in suggestions:
                 suggestion_text = suggestion.text
-                # print(f"Vorschlagstext: {suggestion_text}")
+                # logging.info(f"Vorschlagstext: {suggestion_text}")
                 if text in suggestion_text:
                     suggestion.click()
                     option_found = True
-                    print(f" {text} aus dropdown ausgewählt")
+                    logging.info(f" {text} aus dropdown ausgewählt")
                     sleep(1)
                     break
             if not option_found:
                 raise Exception(f"Kein passender Vorschlag für {text} gefunden")
         except:
-            print("Fehler: beim  interagieren mit den Elementen")
+            logging.info("Fehler: beim  interagieren mit den Elementen")
     return element
 
 
@@ -171,31 +172,31 @@ def screenshot_and_extract_journey_info(driver, screenshot_path, target_time=Non
                 # überprüfe ob die gefundene zeit die gesuchte zeit ist
                 if departure_time == target_time:
                     target_price = float(price)
-                    print(f"Gesuchte Reise gefunden: Option [{index}] mit Zeit {departure_time} und Preis: {price}€")
+                    logging.info(f"Gesuchte Reise gefunden: Option [{index}] mit Zeit {departure_time} und Preis: {price}€")
                     break
                 else:
                     continue
 
             except NoSuchElementException:
-                # print(f"Fehler Reise {index}")
+                # logging.info(f"Fehler Reise {index}")
                 continue
 
         # Rückgabe vom PReis der gesuchten Reise
         if target_price is not None:
-            print(f"Ausgewählte Reise: Abfahrt {target_time}, Preis: {target_price}€")
+            logging.info(f"Ausgewählte Reise: Abfahrt {target_time}, Preis: {target_price}€")
             return target_price
         else:
             if target_time:
-                print(
+                logging.info(
                     f"Keine Reise mit Abfahrtszeit {target_time} gefunden. Gewünschte Abfahrtzeit wirklich vorhanden auf DB seite?")
                 raise
             return None
 
     except TimeoutException:
-        print("Timeout: Elemente wurden nicht rechtzeitig gefunden.")
+        logging.info("Timeout: Elemente wurden nicht rechtzeitig gefunden.")
         return None
     except Exception as e:
-        print(f"Ein Fehler ist aufgetreten: {str(e)}")
+        logging.info(f"Ein Fehler ist aufgetreten: {str(e)}")
         return None
 
 
@@ -209,7 +210,7 @@ def set_currency_to_eur(driver):
             )
             currency_button.click()
         except:
-            print("Fehler beim öffnen von Sprachauswahl und Währungsauswahl")
+            logging.info("Fehler beim öffnen von Sprachauswahl und Währungsauswahl")
 
         # Währung auf EUR setzen
         currency_select = WebDriverWait(driver, 10).until(
@@ -217,7 +218,7 @@ def set_currency_to_eur(driver):
         )
         select = Select(currency_select)
         select.select_by_value("EUR")
-        print("Währung auf EUR gesetzt")
+        logging.info("Währung auf EUR gesetzt")
         sleep(1)
 
         # Overlay schließen
@@ -225,10 +226,10 @@ def set_currency_to_eur(driver):
             EC.element_to_be_clickable((By.CSS_SELECTOR, "button[aria-label='close']"))
         )
         close_button.click()
-        print("Währungsauswahl geschlossen")
+        logging.info("Währungsauswahl geschlossen")
         sleep(1)
     except Exception as e:
-        print(f"Fehler bei der Währungsauswahl: {str(e)}")
+        logging.info(f"Fehler bei der Währungsauswahl: {str(e)}")
 
 
 
@@ -255,7 +256,7 @@ def send_notification(message_body):
             from_='whatsapp:+14155238886',  # Twilio WhatsApp-Nummer
             to=recipient
         )
-    print("whatsapp gesendet")
+    logging.info("whatsapp gesendet")
 
 
 # main function für hin und rückfahrt
@@ -265,7 +266,7 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
 
     try:
         driver.get(BASE_URL)
-        print("Webseite geöffnet")
+        logging.info("Webseite geöffnet")
 
         # cookies akzeptieren
         wait_and_interact(driver, By.ID, "onetrust-accept-btn-handler", 'click')
@@ -305,14 +306,14 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         # Ticketpreis extrahieren und Screenshot machen
         screenshot_path = os.path.join(screenshot_dir, f"{datum_uhrzeit}_hinfahrt_screenshot.png")
         extracted_price_1 = screenshot_and_extract_journey_info(driver, screenshot_path, hinfahrt_time)
-        print(f"Hinfahrt Ticketpreis extracted_price_1: {extracted_price_1}€")
+        logging.info(f"Hinfahrt Ticketpreis extracted_price_1: {extracted_price_1}€")
         driver.quit()
         sleep(2)
 
         ######################################### Heimfahrt wiederholen #####################################
         driver = init_driver()
         driver.get(BASE_URL)
-        print("Webseite geöffnet")
+        logging.info("Webseite geöffnet")
 
         # Cookie akzeptieren
         wait_and_interact(driver, By.ID, "onetrust-accept-btn-handler", 'click')
@@ -353,7 +354,7 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         # Ticketpreis extrahieren und Screenshot machen
         screenshot_path = os.path.join(screenshot_dir, f"{datum_uhrzeit}_heimfahrt_screenshot.png")
         extracted_price_2 = screenshot_and_extract_journey_info(driver, screenshot_path, heimfahrt_time)
-        print(f"Heimfahrt Ticketpreis extracted_preice_2: {extracted_price_2}€")
+        logging.info(f"Heimfahrt Ticketpreis extracted_preice_2: {extracted_price_2}€")
 
         # Preise in CSV speichern
         new_row = pd.DataFrame([{
@@ -363,7 +364,7 @@ def book_ticket(von, nach, hinfahrt_date_object, heimfahrt_date_object):
         }])
         df = pd.concat([df, new_row], ignore_index=True)
         df.to_csv(CSV_FILE, index=False)
-        print("Preise in CSV gespeichert")
+        logging.info("Preise in CSV gespeichert")
 
     finally:
         driver.quit()
@@ -399,12 +400,12 @@ Vorheriger Preis: {previous_heim}€
 Jetziger Preis: {extracted_price_2}€""".strip()
 
     if not csv:
-        print("erster Eintrag in csv - Preistracking hat erst begonnen")
+        logging.info("erster Eintrag in csv - Preistracking hat erst begonnen")
 
     #elif previous_hin > extracted_price_1 or previous_heim > extracted_price_2:
         #send_notification(body)
     #else:
-        #print(f"Keine Preisänderung hin:{previous_hin}, heim:{previous_heim}")
+        #logging.info(f"Keine Preisänderung hin:{previous_hin}, heim:{previous_heim}")
 
 
 ## funktion ausführen
