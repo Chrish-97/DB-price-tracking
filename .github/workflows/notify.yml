@@ -24,8 +24,8 @@ jobs:
             --label "korn" \
             --body "$BODY"
         env:
-          # GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
           TITLE: Kornalarm
           ASSIGNEES: maxgruber19,Chrish-97
           BODY: |
