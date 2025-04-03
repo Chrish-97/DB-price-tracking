@@ -68,8 +68,7 @@ jobs:
               gh issue create \
                 --title "Preissenkung" \
                 --assignee "$ASSIGNEES" \
-                --body "
-                # Preisminderung
+                --body "# Preisminderung
                 '''
                 $last_two_rows
                 '''
@@ -78,8 +77,7 @@ jobs:
               gh issue create \
                 --title "Preiserhöhung" \
                 --assignee "$ASSIGNEES" \
-                --body "
-                # Preiserhöhung
+                --body "# Preiserhöhung
                 '''
                 $last_two_rows
                 '''
