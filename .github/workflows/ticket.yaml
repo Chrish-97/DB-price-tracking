@@ -52,6 +52,8 @@ jobs:
 
       - name: issue
         run: |
+          # remove exit to enable issue creation again 
+          exit 0
           
           # Read the last two rows of the CSV
           last_two_rows=$(tail -n 2 ticket_prices.csv)
